@@ -12,9 +12,10 @@
     .muted{ opacity:.75; margin: 0 0 14px; }
     label{ display:grid; gap:6px; font-size: 13px; margin-top: 10px; }
     input{ width: 100%; padding: 10px 12px; border-radius: 12px; border:1px solid #d7dbdf; }
-    .row{ display:flex; gap:10px; margin-top: 14px; }
-    .btn2{ padding: 10px 14px; border-radius: 12px; border: 1px solid #0b6b5e; background:#0b6b5e; color:#fff; font-weight: 800; cursor:pointer; }
+    .row{ display:flex; gap:10px; margin-top: 14px; flex-wrap: wrap; }
+    .btn2{ padding: 10px 14px; border-radius: 12px; border: 1px solid #0b6b5e; background:#0b6b5e; color:#fff; font-weight: 900; cursor:pointer; }
     .btn2.alt{ border-color:#ccc; background:#fff; color:#111; }
+    .msg{ margin-top:12px; font-size: 13px; }
   </style>
 </head>
 <body>
@@ -23,7 +24,7 @@
   <div class="login-wrap">
     <div class="login-card">
       <h1>Login</h1>
-      <p class="muted">Use this page for authentication. (We will wire Firebase auth next.)</p>
+      <p class="muted">Email/Password authentication (Firebase)</p>
 
       <label>Email
         <input id="email" type="email" placeholder="name@hmh.mv" />
@@ -35,18 +36,50 @@
 
       <div class="row">
         <button class="btn2" type="button" id="btnLogin">Login</button>
+        <button class="btn2 alt" type="button" id="btnSignup">Sign up</button>
         <button class="btn2 alt" type="button" id="btnBack">Back</button>
       </div>
 
-      <p class="muted" id="msg" style="margin-top:12px;"></p>
+      <div class="msg muted" id="msg"></div>
     </div>
   </div>
 
-  <script>
-    document.getElementById("btnBack").onclick = () => location.href = "/index.html";
-    document.getElementById("btnLogin").onclick = () => {
-      document.getElementById("msg").textContent = "Login not wired yet. Next step: add Firebase Auth (Email/Password or Google).";
+  <script type="module">
+    import { login, signup, watchAuth } from "/shared/auth.js";
+
+    const $ = (id) => document.getElementById(id);
+    const msg = $("msg");
+
+    $("btnBack").onclick = () => location.href = "/index.html";
+
+    $("btnLogin").onclick = async () => {
+      msg.textContent = "Logging in…";
+      try {
+        await login($("email").value.trim(), $("password").value);
+        msg.textContent = "Logged in ✅ Redirecting…";
+        location.href = "/ER/board.html";
+      } catch (e) {
+        console.error(e);
+        msg.textContent = e.message || "Login failed";
+      }
     };
+
+    $("btnSignup").onclick = async () => {
+      msg.textContent = "Creating account…";
+      try {
+        await signup($("email").value.trim(), $("password").value);
+        msg.textContent = "Account created ✅ Redirecting…";
+        location.href = "/ER/board.html";
+      } catch (e) {
+        console.error(e);
+        msg.textContent = e.message || "Signup failed";
+      }
+    };
+
+    // If already logged in, jump to board
+    watchAuth((u) => {
+      if (u) location.href = "/ER/board.html";
+    });
   </script>
 </body>
 </html>

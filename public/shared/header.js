@@ -1,3 +1,5 @@
+import { watchAuth, logout } from "/shared/auth.js";
+
 const NAV_LINKS = [
   { label: "Home", href: "/index.html" },
   { label: "ER Board", href: "/ER/board.html" },
@@ -42,20 +44,17 @@ function buildHeader() {
   loginA.className = "hmh-btn light";
   loginA.href = "/login.html";
   loginA.textContent = "Login";
-  auth.appendChild(loginA);
 
   const signOutBtn = document.createElement("button");
   signOutBtn.className = "hmh-btn danger";
   signOutBtn.type = "button";
   signOutBtn.textContent = "Sign Out";
   signOutBtn.addEventListener("click", async () => {
-    if (typeof window.hmhSignOut === "function") {
-      await window.hmhSignOut();
-      window.location.href = "/login.html";
-    } else {
-      alert("Sign out not wired yet.");
-    }
+    await logout();
+    window.location.href = "/login.html";
   });
+
+  auth.appendChild(loginA);
   auth.appendChild(signOutBtn);
 
   inner.appendChild(titleWrap);
@@ -77,18 +76,28 @@ function buildHeader() {
 
   header.appendChild(inner);
   header.appendChild(nav);
-  return header;
+
+  return { header, loginA, signOutBtn, nav };
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   if (document.getElementById("hmhHeader")) return;
-  const h = buildHeader();
+
+  const { header, loginA, signOutBtn, nav } = buildHeader();
 
   const isLogin = normalizePath(window.location.pathname).endsWith("/login.html");
-  if (isLogin) {
-    const nav = h.querySelector(".hmh-nav");
-    if (nav) nav.style.display = "none";
-  }
+  if (isLogin) nav.style.display = "none";
 
-  document.body.insertBefore(h, document.body.firstChild);
+  document.body.insertBefore(header, document.body.firstChild);
+
+  // Toggle buttons based on auth state
+  watchAuth((u) => {
+    if (u) {
+      loginA.style.display = "none";
+      signOutBtn.style.display = "inline-flex";
+    } else {
+      loginA.style.display = "inline-flex";
+      signOutBtn.style.display = "none";
+    }
+  });
 });

@@ -114,7 +114,16 @@
           </label>
         </div>
 
-        <div class="rowBtns">
+        <div class="grid2" style="margin-top:8px;">
+  <label>Transfer to (vacant beds)
+    <select name="transferTo" id="transferTo"><option value="">— Select vacant bed —</option></select>
+  </label>
+  <div style="display:flex; align-items:flex-end; justify-content:flex-end;">
+    <button id="btnTransfer" type="button" class="btn2 primary">Transfer</button>
+  </div>
+</div>
+
+<div class="rowBtns">
           <button id="btnVacant" type="button" class="btn2 danger">Mark Vacant</button>
           <button id="btnSave" type="submit" class="btn2 primary">Save</button>
         </div>

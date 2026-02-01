@@ -4,8 +4,9 @@ import { signInAnonymously, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 import {
-  collection, doc, setDoc, updateDoc, deleteField,
-  serverTimestamp, onSnapshot, query, orderBy, getDocs
+  collection, doc, setDoc, updateDoc,
+  serverTimestamp, onSnapshot, query, orderBy, getDocs,
+  runTransaction
 } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore.js";
 
 const zonesEl = document.getElementById("zones");
@@ -18,7 +19,13 @@ const modalTitle = document.getElementById("modalTitle");
 const bedForm = document.getElementById("bedForm");
 const btnVacant = document.getElementById("btnVacant");
 
+const transferSelect = document.getElementById("transferTo");
+const btnTransfer = document.getElementById("btnTransfer");
+
 const COL = "erBeds";
+
+// Cache latest beds for transfer dropdown
+let bedsCache = [];
 
 const ZONES = [
   { name: "Resus Zone", beds: 3 },
@@ -56,6 +63,22 @@ function formData() {
   const o = {};
   for (const [k, v] of fd.entries()) o[k] = safe(v).trim();
   return o;
+}
+
+function populateTransferOptions(currentDocId) {
+  if (!transferSelect) return;
+  transferSelect.innerHTML = `<option value="">— Select vacant bed —</option>`;
+
+  const vacant = bedsCache
+    .filter(b => b.docId !== currentDocId && (b.status || "vacant") === "vacant")
+    .sort((a, b) => (a.zone + a.bedLabel).localeCompare(b.zone + b.bedLabel));
+
+  for (const b of vacant) {
+    const opt = document.createElement("option");
+    opt.value = b.docId;
+    opt.textContent = `${b.zone} • ${b.bedLabel}`;
+    transferSelect.appendChild(opt);
+  }
 }
 
 function cardForBed(docId, data) {
@@ -116,6 +139,8 @@ function cardForBed(docId, data) {
   card.addEventListener("click", () => {
     modalTitle.textContent = `${data.zone || ""} • ${data.bedLabel || ""}`.trim();
     setForm({ docId, ...data });
+
+    populateTransferOptions(docId);
     openModal();
   });
 
@@ -234,6 +259,84 @@ bedForm.addEventListener("submit", async (e) => {
   close();
 });
 
+/* -------- Transfer (move all info from source bed to target vacant bed) -------- */
+btnTransfer?.addEventListener("click", async () => {
+  const d = formData();
+  const fromId = d.docId;
+  const toId = transferSelect?.value;
+
+  if (!fromId) return alert("Missing current bed docId");
+  if (!toId) return alert("Select a vacant bed to transfer to.");
+
+  if (!confirm(`Transfer patient from:\n${fromId}\n\nTo:\n${toId}\n\nThis will MOVE all patient info.`)) return;
+
+  try {
+    await runTransaction(db, async (tx) => {
+      const fromRef = doc(db, COL, fromId);
+      const toRef = doc(db, COL, toId);
+
+      const fromSnap = await tx.get(fromRef);
+      const toSnap = await tx.get(toRef);
+
+      if (!fromSnap.exists()) throw new Error("Source bed not found.");
+      if (!toSnap.exists()) throw new Error("Target bed not found.");
+
+      const from = fromSnap.data();
+      const to = toSnap.data();
+
+      if ((from.status || "vacant") !== "occupied") {
+        throw new Error("Source bed is not occupied.");
+      }
+      if ((to.status || "vacant") !== "vacant") {
+        throw new Error("Target bed is not vacant.");
+      }
+
+      // Fields to move (ALL patient-related)
+      const patientPayload = {
+        status: "occupied",
+        patientName: from.patientName || "",
+        age: from.age || "",
+        hospNo: from.hospNo || "",
+        idNumber: from.idNumber || "",
+        contactNo: from.contactNo || "",
+        assignedNurse: from.assignedNurse || "",
+        assignedDoctor: from.assignedDoctor || "",
+        diagnosis: from.diagnosis || "",
+        plan: from.plan || "",
+        disposition: from.disposition || "",
+        notes: from.notes || "",
+        updatedAt: serverTimestamp(),
+      };
+
+      // Write patient data into target (keep target zone/bedLabel as-is)
+      tx.update(toRef, patientPayload);
+
+      // Clear source
+      tx.update(fromRef, {
+        status: "vacant",
+        patientName: "",
+        age: "",
+        hospNo: "",
+        idNumber: "",
+        contactNo: "",
+        assignedNurse: "",
+        assignedDoctor: "",
+        diagnosis: "",
+        plan: "",
+        disposition: "",
+        notes: "",
+        updatedAt: serverTimestamp(),
+      });
+    });
+
+    alert("Transferred ✅");
+    close();
+  } catch (e) {
+    console.error(e);
+    alert(e.message || "Transfer failed");
+  }
+});
+
 async function boot() {
   syncEl.textContent = "Sync: signing in…";
   await signInAnonymously(auth);
@@ -247,6 +350,7 @@ async function boot() {
     onSnapshot(q, (snap) => {
       const rows = [];
       snap.forEach((d) => rows.push({ docId: d.id, ...d.data() }));
+      bedsCache = rows;
       renderBoard(rows);
       syncEl.textContent = `Sync: ${nowLabel()}`;
     });
