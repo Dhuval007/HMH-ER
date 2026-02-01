@@ -1,28 +1,240 @@
 :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-.wrap { max-width: 900px; margin: 24px auto; padding: 0 16px; }
-.row { display: flex; gap: 12px; align-items: center; }
-.right { margin-left: auto; }
-.card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-top: 16px; background: #fff; }
-input { flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid #ccc; }
-textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #ccc; min-height: 90px; }
-button { padding: 10px 14px; border-radius: 10px; border: 1px solid #ccc; cursor: pointer; background: #fff; }
-.status { opacity: .8; font-size: 14px; }
-.list { display: grid; gap: 10px; margin-top: 12px; }
-.item { border: 1px solid #eee; border-radius: 12px; padding: 12px; display:flex; gap:10px; align-items:center; }
-.item .t { flex: 1; white-space: pre-wrap; }
-.item .meta { opacity: .7; font-size: 12px; }
-.pill { border-radius: 999px; padding: 10px 14px; }
+body { margin:0; background:#f2f4f5; color:#111; }
 
-/* Modal */
-.modal.hidden { display: none; }
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; padding:16px; }
-.modalCard { background:#fff; width:min(760px, 100%); border-radius:16px; padding:16px; box-shadow: 0 10px 30px rgba(0,0,0,.15); }
-.modalHeader { display:flex; align-items:center; gap:12px; margin-bottom: 10px; }
-.modalHeader h2 { margin:0; flex:1; font-size: 18px; }
-.xbtn { border:0; background:transparent; font-size:20px; cursor:pointer; }
+.topbar{
+  background: linear-gradient(180deg, #0b6b5e 0%, #0a5c52 100%);
+  padding: 18px 14px;
+}
+.topbar-inner{ max-width: 980px; margin: 0 auto; display:flex; align-items:center; gap:12px; }
+.title{ color:#fff; font-weight:800; font-size: 22px; letter-spacing:.2px; }
+.actions{ margin-left:auto; display:flex; gap:10px; align-items:center;
 
-.formGrid { display:grid; gap:10px; }
-.formGrid label { display:grid; gap:6px; font-size: 13px; }
-.grid2 { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-.grid3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
-.rowBtns { display:flex; justify-content:flex-end; margin-top: 6px; }
+cd /Users/Fizz/Desktop/HMH-ER/HMH-ER
+
+mkdir -p public/templates
+cp -f ~/Downloads/ER_PROGRESS_SHEET_template_v2.docx public/templates/ER_PROGRESS_SHEET_template.docx
+ls -la public/templates
+
+cat > public/index.html <<'HTML'
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HMH ER</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="title">Emergency Room Patient Tracker</div>
+      <div class="actions">
+        <button id="btnObs" class="btn pill">Observation Sheet</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Keep your existing app content here if you want.
+         This page includes the Observation Sheet modal + DOCX generator. -->
+
+    <section class="card">
+      <h2>Observation / ER Progress Sheet</h2>
+      <p class="muted">Use the button above to fill and generate the 2-page ER Progress Sheet DOCX.</p>
+    </section>
+  </main>
+
+  <!-- Observation Sheet Modal -->
+  <div id="obsModal" class="modal hidden">
+    <div class="modalCard">
+      <div class="modalHeader">
+        <h2>ER Progress Sheet (2 pages)</h2>
+        <button id="closeObs" class="xbtn" type="button">✕</button>
+      </div>
+
+      <form id="obsForm" class="formGrid">
+        <!-- PAGE 1 TOP -->
+        <div class="grid3">
+          <label>Hosp no <input name="hosp_no" /></label>
+          <label>Bed no <input name="bed_no" /></label>
+          <label>MLR no <input name="mlr_no" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Patient name <input name="patient_name" /></label>
+          <label>ID number <input name="id_number" /></label>
+        </div>
+
+        <div class="grid3">
+          <label>Age <input name="age" /></label>
+          <label>Sex <input name="sex" /></label>
+          <label>Contact no <input name="contact_no" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Address <input name="address" /></label>
+          <label>Occupation <input name="occupation" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Brought by <input name="brought_by" /></label>
+          <label>Relationship <input name="relationship" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Triage date <input name="triage_date" placeholder="DD/MM/YYYY" /></label>
+          <label>Triage time <input name="triage_time" placeholder="HH:MM" /></label>
+        </div>
+
+        <!-- Checkbox-like fields (fill with Yes/No or text like "Self") -->
+        <div class="grid2">
+          <label>Compromised (Yes/No) <input name="compromised" placeholder="Yes / No" /></label>
+          <label>Distressed (Yes/No) <input name="distressed" placeholder="Yes / No" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Spine at risk (Yes/No) <input name="spine_at_risk" placeholder="Yes / No" /></label>
+          <label>Others <input name="others" /></label>
+        </div>
+
+        <div class="grid3">
+          <label>Arrival (Self/Referred/Ambulance) <input name="arrival" /></label>
+          <label>Triage category (Yellow/Red/Black) <input name="triage_category" /></label>
+          <label>Time (triage) <input name="triage_category_time" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Trauma (Yes/No) <input name="trauma" placeholder="Yes / No" /></label>
+          <label>Medicolegal (Yes/No) <input name="medicolegal" placeholder="Yes / No" /></label>
+        </div>
+
+        <div class="grid3">
+          <label>RR <input name="rr" /></label>
+          <label>O2 Sat <input name="o2_sat" /></label>
+          <label>Pulse <input name="pulse" /></label>
+        </div>
+
+        <div class="grid3">
+          <label>BP <input name="bp" /></label>
+          <label>CRT <input name="crt" /></label>
+          <label>GCS <input name="gcs" /></label>
+        </div>
+
+        <div class="grid3">
+          <label>Temp <input name="temperature" /></label>
+          <label>GRBS <input name="grbs" /></label>
+          <label>Pain (/10) <input name="pain" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Chief complaint <textarea name="chief_complaint"></textarea></label>
+          <label>Allergies <textarea name="allergies"></textarea></label>
+        </div>
+
+        <label>Medication <textarea name="medications"></textarea></label>
+        <label>Past medical / surgical history <textarea name="pmh"></textarea></label>
+        <label>Events <textarea name="events"></textarea></label>
+
+        <div class="grid2">
+          <label>Clinical exam <textarea name="clinical_exam"></textarea></label>
+          <label>Investigations <textarea name="investigations"></textarea></label>
+        </div>
+
+        <label>Provisional diagnosis <textarea name="provisional_dx"></textarea></label>
+        <label>Attending doctor <input name="attending_doctor" /></label>
+
+        <!-- PAGE 2 -->
+        <div class="divider"></div>
+        <h3 class="sec">Page 2</h3>
+
+        <label>Review notes (Date/Time + Instructions/Medications) <textarea name="review_notes" placeholder="Example:
+01/02 10:30 - IV Paracetamol 1g
+01/02 11:15 - Review by MO..."></textarea></label>
+
+        <label>Treatment in emergency room <textarea name="treatment_er"></textarea></label>
+
+        <label>Discharge medicines and advice <textarea name="discharge_meds_advice"></textarea></label>
+
+        <div class="grid2">
+          <label>Discharge diagnosis <textarea name="discharge_dx"></textarea></label>
+          <label>Follow-up advice <textarea name="followup_advice"></textarea></label>
+        </div>
+
+        <div class="grid2">
+          <label>Date & time of discharge <input name="discharge_datetime" placeholder="DD/MM/YYYY HH:MM" /></label>
+          <label>Discharging doctor <input name="discharging_doctor" /></label>
+        </div>
+
+        <div class="rowBtns">
+          <button type="button" id="btnGenerateDoc" class="btn primary">Generate DOCX</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DOCX generation libs -->
+  <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.7/dist/pizzip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.52.0/build/docxtemplater.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
+HTML
+
+cat > public/styles.css <<'CSS'
+:root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+body { margin:0; background:#f2f4f5; color:#111; }
+
+.topbar{
+  background: linear-gradient(180deg, #0b6b5e 0%, #0a5c52 100%);
+  padding: 18px 14px;
+}
+.topbar-inner{ max-width: 980px; margin: 0 auto; display:flex; align-items:center; gap:12px; }
+.title{ color:#fff; font-weight:800; font-size: 22px; letter-spacing:.2px; }
+.actions{ margin-left:auto; display:flex; gap:10px; align-items:center;
+
+cat > public/styles.css <<'CSS'
+:root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+body { margin:0; background:#f2f4f5; color:#111; }
+
+.topbar{
+  background: linear-gradient(180deg, #0b6b5e 0%, #0a5c52 100%);
+  padding: 18px 14px;
+}
+.topbar-inner{ max-width: 980px; margin: 0 auto; display:flex; align-items:center; gap:12px; }
+.title{ color:#fff; font-weight:800; font-size: 22px; letter-spacing:.2px; }
+.actions{ margin-left:auto; display:flex; gap:10px; align-items:center; }
+
+.wrap { max-width: 980px; margin: 18px auto; padding: 0 14px; }
+.card { background:#fff; border-radius: 16px; padding: 16px; box-shadow: 0 10px 25px rgba(0,0,0,.06); }
+.card h2 { margin:0 0 6px; }
+.muted{ opacity:.7; margin:0; }
+
+.btn{ border:1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.12); color:#fff;
+  padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:700; }
+.pill{ border-radius:999px; }
+.primary{ background:#0b6b5e; border-color:#0b6b5e; color:#fff; }
+.primary:hover{ filter: brightness(1.05); }
+
+.modal.hidden { display:none; }
+.modal{ position:fixed; inset:0; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; padding:14px; }
+.modalCard{ background:#fff; width:min(980px, 100%); border-radius:16px; padding:14px; box-shadow: 0 12px 35px rgba(0,0,0,.18); max-height: 92vh; overflow:auto; }
+
+.modalHeader{ display:flex; align-items:center; gap:10px; margin-bottom: 10px; }
+.modalHeader h2{ margin:0; flex:1; }
+.xbtn{ background:transparent; border:0; font-size:22px; cursor:pointer; padding:6px 10px; }
+
+.formGrid{ display:grid; gap:10px; }
+.formGrid label{ display:grid; gap:6px; font-size:13px; }
+.formGrid input, .formGrid textarea{
+  width:100%; padding:10px 12px; border-radius:12px; border:1px solid #d7dbdf; background:#fff;
+}
+.formGrid textarea{ min-height: 86px; resize: vertical; }
+
+.grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+.grid3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
+
+.divider{ height:1px; background:#e7eaee; margin: 6px 0; }
+.sec{ margin: 4px 0 0; }
+.rowBtns{ display:flex; justify-content:flex-end; padding-top: 6px; }

@@ -3,29 +3,161 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ER Handover</title>
+  <title>HMH ER</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="title">Emergency Room Patient Tracker</div>
+      <div class="actions">
+        <button id="btnObs" class="btn pill">Observation Sheet</button>
+      </div>
+    </div>
+  </header>
+
   <main class="wrap">
-    <header class="row">
-      <h1>ER Handover</h1>
-      <div id="status" class="status">Starting…</div>
-    </header>
+    <!-- Keep your existing app content here if you want.
+         This page includes the Observation Sheet modal + DOCX generator. -->
 
     <section class="card">
-      <h2>Add item</h2>
-      <form id="addForm" class="row">
-        <input id="text" type="text" placeholder="Handover note…" autocomplete="off" required />
-        <button type="submit">Add</button>
-      </form>
-    </section>
-
-    <section class="card">
-      <h2>Items</h2>
-      <div id="list" class="list"></div>
+      <h2>Observation / ER Progress Sheet</h2>
+      <p class="muted">Use the button above to fill and generate the 2-page ER Progress Sheet DOCX.</p>
     </section>
   </main>
+
+  <!-- Observation Sheet Modal -->
+  <div id="obsModal" class="modal hidden">
+    <div class="modalCard">
+      <div class="modalHeader">
+        <h2>ER Progress Sheet (2 pages)</h2>
+        <button id="closeObs" class="xbtn" type="button">✕</button>
+      </div>
+
+      <form id="obsForm" class="formGrid">
+        <!-- PAGE 1 TOP -->
+        <div class="grid3">
+          <label>Hosp no <input name="hosp_no" /></label>
+          <label>Bed no <input name="bed_no" /></label>
+          <label>MLR no <input name="mlr_no" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Patient name <input name="patient_name" /></label>
+          <label>ID number <input name="id_number" /></label>
+        </div>
+
+        <div class="grid3">
+          <label>Age <input name="age" /></label>
+          <label>Sex <input name="sex" /></label>
+          <label>Contact no <input name="contact_no" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Address <input name="address" /></label>
+          <label>Occupation <input name="occupation" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Brought by <input name="brought_by" /></label>
+          <label>Relationship <input name="relationship" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Triage date <input name="triage_date" placeholder="DD/MM/YYYY" /></label>
+          <label>Triage time <input name="triage_time" placeholder="HH:MM" /></label>
+        </div>
+
+        <!-- Checkbox-like fields (fill with Yes/No or text like "Self") -->
+        <div class="grid2">
+          <label>Compromised (Yes/No) <input name="compromised" placeholder="Yes / No" /></label>
+          <label>Distressed (Yes/No) <input name="distressed" placeholder="Yes / No" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Spine at risk (Yes/No) <input name="spine_at_risk" placeholder="Yes / No" /></label>
+          <label>Others <input name="others" /></label>
+        </div>
+
+        <div class="grid3">
+          <label>Arrival (Self/Referred/Ambulance) <input name="arrival" /></label>
+          <label>Triage category (Yellow/Red/Black) <input name="triage_category" /></label>
+          <label>Time (triage) <input name="triage_category_time" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Trauma (Yes/No) <input name="trauma" placeholder="Yes / No" /></label>
+          <label>Medicolegal (Yes/No) <input name="medicolegal" placeholder="Yes / No" /></label>
+        </div>
+
+        <div class="grid3">
+          <label>RR <input name="rr" /></label>
+          <label>O2 Sat <input name="o2_sat" /></label>
+          <label>Pulse <input name="pulse" /></label>
+        </div>
+
+        <div class="grid3">
+          <label>BP <input name="bp" /></label>
+          <label>CRT <input name="crt" /></label>
+          <label>GCS <input name="gcs" /></label>
+        </div>
+
+        <div class="grid3">
+          <label>Temp <input name="temperature" /></label>
+          <label>GRBS <input name="grbs" /></label>
+          <label>Pain (/10) <input name="pain" /></label>
+        </div>
+
+        <div class="grid2">
+          <label>Chief complaint <textarea name="chief_complaint"></textarea></label>
+          <label>Allergies <textarea name="allergies"></textarea></label>
+        </div>
+
+        <label>Medication <textarea name="medications"></textarea></label>
+        <label>Past medical / surgical history <textarea name="pmh"></textarea></label>
+        <label>Events <textarea name="events"></textarea></label>
+
+        <div class="grid2">
+          <label>Clinical exam <textarea name="clinical_exam"></textarea></label>
+          <label>Investigations <textarea name="investigations"></textarea></label>
+        </div>
+
+        <label>Provisional diagnosis <textarea name="provisional_dx"></textarea></label>
+        <label>Attending doctor <input name="attending_doctor" /></label>
+
+        <!-- PAGE 2 -->
+        <div class="divider"></div>
+        <h3 class="sec">Page 2</h3>
+
+        <label>Review notes (Date/Time + Instructions/Medications) <textarea name="review_notes" placeholder="Example:
+01/02 10:30 - IV Paracetamol 1g
+01/02 11:15 - Review by MO..."></textarea></label>
+
+        <label>Treatment in emergency room <textarea name="treatment_er"></textarea></label>
+
+        <label>Discharge medicines and advice <textarea name="discharge_meds_advice"></textarea></label>
+
+        <div class="grid2">
+          <label>Discharge diagnosis <textarea name="discharge_dx"></textarea></label>
+          <label>Follow-up advice <textarea name="followup_advice"></textarea></label>
+        </div>
+
+        <div class="grid2">
+          <label>Date & time of discharge <input name="discharge_datetime" placeholder="DD/MM/YYYY HH:MM" /></label>
+          <label>Discharging doctor <input name="discharging_doctor" /></label>
+        </div>
+
+        <div class="rowBtns">
+          <button type="button" id="btnGenerateDoc" class="btn primary">Generate DOCX</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DOCX generation libs -->
+  <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.7/dist/pizzip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.52.0/build/docxtemplater.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>
 
   <script type="module" src="./app.js"></script>
 </body>
