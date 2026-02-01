@@ -1,0 +1,11 @@
+:root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+.wrap { max-width: 900px; margin: 24px auto; padding: 0 16px; }
+.row { display: flex; gap: 12px; align-items: center; }
+.card { border: 1px solid #ddd; border-radius: 12px; padding: 16px; margin-top: 16px; }
+input { flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid #ccc; }
+button { padding: 10px 14px; border-radius: 10px; border: 1px solid #ccc; cursor: pointer; }
+.status { margin-left: auto; opacity: .8; font-size: 14px; }
+.list { display: grid; gap: 10px; margin-top: 12px; }
+.item { border: 1px solid #eee; border-radius: 12px; padding: 12px; display:flex; gap:10px; align-items:center; }
+.item .t { flex: 1; white-space: pre-wrap; }
+.item .meta { opacity: .7; font-size: 12px; }
