@@ -1,0 +1,99 @@
+.board-head { margin-bottom: 12px; }
+.board-head-row{ display:flex; align-items:center; gap:12px; }
+.board-title{ margin:0; font-size: 22px; }
+.board-actions{ margin-left:auto; display:flex; align-items:center; gap:10px; }
+.sync{ font-size: 12px; opacity:.75; }
+
+.muted{ margin:6px 0 0; opacity:.75; }
+
+.zones{ display:grid; gap:14px; }
+
+.zone{
+  background:#fff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,.06);
+}
+.zone h3{ margin:0 0 10px; font-size:18px; }
+
+.bedGrid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.bedCard{
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #e7eaee;
+  box-shadow: 0 8px 18px rgba(0,0,0,.05);
+  padding: 12px;
+  cursor:pointer;
+  display:flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 96px;
+}
+
+.bedCard .top{
+  display:flex; align-items:center; gap:10px;
+}
+.bedCard .bedLabel{
+  font-weight: 900;
+  color: #b30000;
+  font-size: 18px;
+}
+.bedCard .badge{
+  margin-left:auto;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-weight: 800;
+  border: 1px solid #e7eaee;
+  background:#f7f8f9;
+}
+
+.bedCard.vacant .badge{ background:#f1fbf8; border-color:#cdeee5; color:#0a5c52; }
+.bedCard.occupied .badge{ background:#fff3f3; border-color:#ffd0d0; color:#b30000; }
+
+.bedCard .line{ font-size: 13px; opacity:.9; }
+.bedCard .sub{ font-size: 12px; opacity:.7; }
+
+.plusRow{
+  display:flex; align-items:center; gap:10px; opacity:.85;
+}
+.plus{
+  width: 26px; height: 26px; border-radius: 999px;
+  border: 1px solid #dbe0e5;
+  display:flex; align-items:center; justify-content:center;
+  font-weight: 900;
+}
+
+.btn2{
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid #d7dbdf;
+  background:#fff;
+  cursor:pointer;
+  font-weight: 900;
+}
+.btn2.primary{ background:#0b6b5e; border-color:#0b6b5e; color:#fff; }
+.btn2.danger{ background: rgba(220,53,69,.92); border-color: rgba(220,53,69,.92); color:#fff; }
+
+/* Modal */
+.modal.hidden{ display:none; }
+.modal{ position:fixed; inset:0; background:rgba(0,0,0,.35); display:flex; align-items:center; justify-content:center; padding:14px; }
+.modalCard{ background:#fff; width:min(980px, 100%); border-radius:16px; padding:14px; box-shadow: 0 12px 35px rgba(0,0,0,.18); max-height: 92vh; overflow:auto; }
+.modalHeader{ display:flex; align-items:center; gap:10px; margin-bottom: 10px; }
+.modalHeader h2{ margin:0; flex:1; font-size:18px; }
+.xbtn{ background:transparent; border:0; font-size:22px; cursor:pointer; padding:6px 10px; }
+
+.formGrid{ display:grid; gap:10px; }
+.formGrid label{ display:grid; gap:6px; font-size:13px; }
+.formGrid input, .formGrid textarea, .formGrid select{
+  width:100%; padding:10px 12px; border-radius:12px; border:1px solid #d7dbdf; background:#fff;
+}
+.formGrid textarea{ min-height: 86px; resize: vertical; }
+.grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+.grid3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
+.rowBtns{ display:flex; justify-content:flex-end; gap:10px; padding-top: 6px; }

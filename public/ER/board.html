@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HMH ER • ER Board</title>
+
+  <link rel="stylesheet" href="/shared/header.css" />
+  <link rel="stylesheet" href="/ER/board.css" />
+</head>
+<body>
+  <script type="module" src="/shared/header.js"></script>
+
+  <main class="hmh-wrap">
+    <section class="hmh-card board-head">
+      <div class="board-head-row">
+        <h2 class="board-title">ER Board</h2>
+        <div class="board-actions">
+          <button id="btnSeed" class="btn2">Seed Beds</button>
+          <span id="sync" class="sync">Sync: …</span>
+        </div>
+      </div>
+      <p class="muted">Tap a bed to edit. “Vacant” beds show a + icon.</p>
+    </section>
+
+    <section class="zones" id="zones"></section>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal hidden">
+    <div class="modalCard">
+      <div class="modalHeader">
+        <h2 id="modalTitle">Bed</h2>
+        <button id="closeModal" class="xbtn" type="button">✕</button>
+      </div>
+
+      <form id="bedForm" class="formGrid">
+        <input type="hidden" name="docId" />
+
+        <div class="grid2">
+          <label>Zone
+            <select name="zone">
+              <option>Resus Zone</option>
+              <option>Red Zone</option>
+              <option>Yellow Zone</option>
+              <option>Green Zone</option>
+              <option>Observation</option>
+            </select>
+          </label>
+
+          <label>Bed
+            <input name="bedLabel" placeholder="Bed 1" />
+          </label>
+        </div>
+
+        <div class="grid2">
+          <label>Status
+            <select name="status">
+              <option value="vacant">Vacant</option>
+              <option value="occupied">Occupied</option>
+            </select>
+          </label>
+
+          <label>Hospital No
+            <input name="hospNo" placeholder="H-17" />
+          </label>
+        </div>
+
+        <label>Patient Name
+          <input name="patientName" placeholder="Full name" />
+        </label>
+
+        <div class="grid3">
+          <label>Age
+            <input name="age" placeholder="Years" />
+          </label>
+          <label>ID Card No
+            <input name="idNumber" placeholder="A123..." />
+          </label>
+          <label>Contact No
+            <input name="contactNo" placeholder="7xxxxxx" />
+          </label>
+        </div>
+
+        <label>Assigned Nurse
+          <input name="assignedNurse" />
+        </label>
+
+        <label>Assigned Doctor
+          <input name="assignedDoctor" />
+        </label>
+
+        <label>Diagnosis
+          <textarea name="diagnosis"></textarea>
+        </label>
+
+        <label>Plan
+          <textarea name="plan"></textarea>
+        </label>
+
+        <div class="grid2">
+          <label>Disposition
+            <select name="disposition">
+              <option value="">—</option>
+              <option>Admit</option>
+              <option>Discharge</option>
+              <option>Transfer</option>
+              <option>LAMA/DOR</option>
+            </select>
+          </label>
+
+          <label>Notes
+            <input name="notes" placeholder="Short note (optional)" />
+          </label>
+        </div>
+
+        <div class="rowBtns">
+          <button id="btnVacant" type="button" class="btn2 danger">Mark Vacant</button>
+          <button id="btnSave" type="submit" class="btn2 primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="/ER/board.js"></script>
+</body>
+</html>
