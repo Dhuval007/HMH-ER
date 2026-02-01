@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HMH ER • Login</title>
+  <link rel="stylesheet" href="/shared/header.css" />
+  <style>
+    .login-wrap{ max-width: 520px; margin: 22px auto; padding: 0 14px; }
+    .login-card{ background:#fff; border-radius: 16px; padding: 16px; box-shadow: 0 10px 25px rgba(0,0,0,.06); }
+    .login-card h1{ margin: 0 0 8px; font-size: 20px; }
+    .muted{ opacity:.75; margin: 0 0 14px; }
+    label{ display:grid; gap:6px; font-size: 13px; margin-top: 10px; }
+    input{ width: 100%; padding: 10px 12px; border-radius: 12px; border:1px solid #d7dbdf; }
+    .row{ display:flex; gap:10px; margin-top: 14px; }
+    .btn2{ padding: 10px 14px; border-radius: 12px; border: 1px solid #0b6b5e; background:#0b6b5e; color:#fff; font-weight: 800; cursor:pointer; }
+    .btn2.alt{ border-color:#ccc; background:#fff; color:#111; }
+  </style>
+</head>
+<body>
+  <script type="module" src="/shared/header.js"></script>
+
+  <div class="login-wrap">
+    <div class="login-card">
+      <h1>Login</h1>
+      <p class="muted">Use this page for authentication. (We will wire Firebase auth next.)</p>
+
+      <label>Email
+        <input id="email" type="email" placeholder="name@hmh.mv" />
+      </label>
+
+      <label>Password
+        <input id="password" type="password" placeholder="••••••••" />
+      </label>
+
+      <div class="row">
+        <button class="btn2" type="button" id="btnLogin">Login</button>
+        <button class="btn2 alt" type="button" id="btnBack">Back</button>
+      </div>
+
+      <p class="muted" id="msg" style="margin-top:12px;"></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("btnBack").onclick = () => location.href = "/index.html";
+    document.getElementById("btnLogin").onclick = () => {
+      document.getElementById("msg").textContent = "Login not wired yet. Next step: add Firebase Auth (Email/Password or Google).";
+    };
+  </script>
+</body>
+</html>
